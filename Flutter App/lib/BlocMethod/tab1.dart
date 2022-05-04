@@ -83,12 +83,14 @@ class UserListBuilder extends StatelessWidget {
     return users.isEmpty
         ? const SizedBox.shrink()
         : ListView.separated(
+            key: const Key('ListViewKey'),
             separatorBuilder: (c, i) => const Divider(),
             controller: scrollController,
             shrinkWrap: true,
             itemCount: users.length,
             itemBuilder: (BuildContext context, i) {
               return UserProfileListTile(
+                key: Key(users[i].id),
                 user: users[i],
                 isSelected: selecUsersIds.contains(users[i].id),
                 onChanged: (v) async {

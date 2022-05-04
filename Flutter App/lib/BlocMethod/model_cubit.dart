@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:demoapp/BlocMethod/model.dart';
+import 'package:demoapp/BlocMethod/model_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class UserProfileCubit extends Cubit<int> {
-  UserProfileCubit() : super(0);
+class UserProfileCubit extends Cubit<UserProfileState> {
+  UserProfileCubit() : super(UserProfileLoadInitial());
   SharedPreferences? pref;
   Future init() async {
     pref = await SharedPreferences.getInstance();
@@ -33,17 +34,19 @@ class UserProfileCubit extends Cubit<int> {
       await pref!.setString(user.id, user.toJson());
       selectedUsers.add(user);
     }
-    emit(state + 1);
+    // emit(state + 1);
+    emit(UserProfileOnSelectionChange(selectedUsers));
   }
 
   Future deSelectAll() async {
     await pref!.clear();
     selectedUsers = [];
-    emit(state - state);
+    // emit(state - state);
+    emit(UserProfileClearAll());
   }
 
-  Future fetchUsers(int count, bool intalized) async {
-    if (!intalized) {
+  Future fetchUsers(int count, [bool? intalized]) async {
+    if (!(intalized ?? true)) {
       if (fetchedUsers.isEmpty) {
         await fetchUserDatas(count);
       }
@@ -59,6 +62,8 @@ class UserProfileCubit extends Cubit<int> {
     final map = json.decode(resp.body);
     final userLst = (map as List).map((e) => UserProfile.fromMap(e));
     fetchedUsers = userLst.toList();
-    emit(state + 1);
+    // print(fetchedUsers.map((e) => e.toMap()));
+    // emit(state + 1);
+    emit(UserProfilenewData(fetchedUsers));
   }
 }

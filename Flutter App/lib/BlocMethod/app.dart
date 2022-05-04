@@ -1,5 +1,6 @@
 import 'package:demoapp/BlocMethod/model.dart';
 import 'package:demoapp/BlocMethod/model_cubit.dart';
+import 'package:demoapp/BlocMethod/model_state.dart';
 import 'package:demoapp/BlocMethod/tab1.dart';
 import 'package:demoapp/BlocMethod/tab2.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -58,13 +57,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               return isLoading
                   ? const Scaffold(
                       body: Center(child: CircularProgressIndicator()))
-                  : BlocBuilder<UserProfileCubit, int>(builder: (_, __) {
+                  : BlocBuilder<UserProfileCubit, UserProfileState>(
+                      builder: (_, __) {
                       return TabBarView(
                           controller: _tabController,
                           children: const [
                             UserProfileListTab1(),
                             UserProfileListTab2(),
-                            // UserListTab2(pref: snapshot.data!)
                           ]);
                     });
             }));
@@ -86,7 +85,10 @@ class UserProfileListTile extends StatelessWidget {
       title: Text(user.name),
       trailing: onChanged == null
           ? null
-          : Checkbox(value: isSelected, onChanged: onChanged),
+          : Checkbox(
+              key: Key('Checkbox${user.id}'),
+              value: isSelected,
+              onChanged: onChanged),
     );
   }
 }
