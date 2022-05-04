@@ -46,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return prefs;
   }
 
+  List<UserModel> datas = [];
   // await prefs.setInt('counter', 10);
   @override
   Widget build(BuildContext context) {
@@ -64,7 +65,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             return isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : TabBarView(controller: _tabController, children: [
-                    UserListTab1(pref: snapshot.data!),
+                    UserListTab1(
+                        pref: snapshot.data!,
+                        userData: () => datas,
+                        userDataUpdate: (ch) => datas = ch),
                     UserListTab2(pref: snapshot.data!)
                   ]);
           }),

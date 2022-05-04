@@ -7,31 +7,51 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class UserListTab1 extends StatefulWidget {
   final SharedPreferences pref;
-  const UserListTab1({Key? key, required this.pref}) : super(key: key);
+  final List<UserModel> Function() userData;
+  final Function(List<UserModel>) userDataUpdate;
+  const UserListTab1(
+      {Key? key,
+      required this.pref,
+      required this.userData,
+      required this.userDataUpdate})
+      : super(key: key);
 
   @override
   State<UserListTab1> createState() => _UserListTab1State();
 }
 
 class _UserListTab1State extends State<UserListTab1> {
+  bool intalized = false;
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent ==
           _scrollController.offset) {
-        if (!isLoading) {
+        if (!isLoad) {
           setState(() {});
         }
-        // SchedulerBinding.instance?.addPostFrameCallback((e) {});
       }
     });
   }
 
-  bool isLoading = false;
+  bool isLoad = false;
   int offset = 0;
-  Future<List<UserModel>> getData() async {
-    isLoading = true;
+  Future getData() async {
+    isLoad = true;
+    if (!intalized) {
+      users = widget.userData().toList();
+      if (users.isEmpty) await getDataFromCloud();
+    } else {
+      await getDataFromCloud();
+    }
+    isLoad = false;
+    intalized = true;
+  }
+
+  Future getDataFromCloud() async {
+    debugPrint('Getting Data From API');
     // print('offset: $offset');
     // int count = users.length;
     // String url = 'https://api.github.com/users?per_page=$offset?last_page=$count';
@@ -41,10 +61,10 @@ class _UserListTab1State extends State<UserListTab1> {
     final map = json.decode(resp.body);
     final userLst = (map as List).map((e) => UserModel.fromMap(e));
     users = userLst.toList();
+    // users.addAll(userLst);
     final valls = widget.pref.getStringList('key');
     selecUsers = valls?.map((e) => UserModel.fromJson(e)).toList() ?? [];
-    isLoading = false;
-    return users;
+    widget.userDataUpdate(users);
   }
 
   List<UserModel> selecUsers = [];
@@ -66,7 +86,7 @@ class _UserListTab1State extends State<UserListTab1> {
   List<UserModel> users = [];
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<UserModel>>(
+    return FutureBuilder(
       future: getData(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         bool isLoading = snapshot.connectionState != ConnectionState.done;
@@ -75,13 +95,12 @@ class _UserListTab1State extends State<UserListTab1> {
         } else {
           return Column(
             children: [
-              Expanded( 
+              Expanded(
                   child: UserListBuilder(
-                users: () => users,
-                selecUsers: () => selecUsers,
-                scrollController: _scrollController,
-                onTap: onTap,
-              )),
+                      users: () => users,
+                      selecUsers: () => selecUsers,
+                      scrollController: _scrollController,
+                      onTap: onTap)),
               if (isLoading)
                 const Padding(
                     padding: EdgeInsets.all(15.0),
@@ -98,7 +117,7 @@ class UserListBuilder extends StatefulWidget {
   final List<UserModel> Function() users;
   final List<UserModel> Function() selecUsers;
   final ScrollController scrollController;
-  final Function(UserModel) onTap; 
+  final Function(UserModel) onTap;
   const UserListBuilder(
       {Key? key,
       required this.users,
