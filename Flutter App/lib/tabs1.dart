@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:demoapp/main.dart';
+import 'package:demoapp/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,6 +47,7 @@ class _UserListTab1State extends State<UserListTab1> {
     } else {
       await getDataFromCloud();
     }
+    selecUsersIds = widget.pref.getKeys().toList();
     isLoad = false;
     intalized = true;
   }
@@ -62,23 +64,21 @@ class _UserListTab1State extends State<UserListTab1> {
     final userLst = (map as List).map((e) => UserModel.fromMap(e));
     users = userLst.toList();
     // users.addAll(userLst);
-    final valls = widget.pref.getStringList('key');
-    selecUsers = valls?.map((e) => UserModel.fromJson(e)).toList() ?? [];
     widget.userDataUpdate(users);
   }
 
-  List<UserModel> selecUsers = [];
+  List<String> selecUsersIds = [];
 
   Future onTap(UserModel user) async {
-    bool isAv = selecUsers.map((e) => e.id).contains(user.id);
-    if (isAv) {
-      selecUsers.removeWhere((e) => e.id == user.id);
-    } else {
-      selecUsers.add(user);
-    }
+    // bool isAv = selecUsersIds.contains(user.id);
+    // if (isAv) {
+    //   await widget.pref.remove(user.id);
+    // } else {
+    //   await widget.pref.setString(user.id, user.toJson());
+    // }
+    // selecUsersIds = widget.pref.getKeys().toList();
     Utils(context).showLoading();
-    final List<String> vals = selecUsers.map((e) => e.toJson()).toList();
-    await widget.pref.setStringList('key', vals);
+    await provider.onTap(user);
     Navigator.pop(context);
   }
 
@@ -98,7 +98,7 @@ class _UserListTab1State extends State<UserListTab1> {
               Expanded(
                   child: UserListBuilder(
                       users: () => users,
-                      selecUsers: () => selecUsers,
+                      // selecUsersIds: () => selecUsersIds,
                       scrollController: _scrollController,
                       onTap: onTap)),
               if (isLoading)
@@ -115,16 +115,16 @@ class _UserListTab1State extends State<UserListTab1> {
 
 class UserListBuilder extends StatefulWidget {
   final List<UserModel> Function() users;
-  final List<UserModel> Function() selecUsers;
+  // final List<String> Function() selecUsersIds;
   final ScrollController scrollController;
   final Function(UserModel) onTap;
-  const UserListBuilder(
-      {Key? key,
-      required this.users,
-      required this.scrollController,
-      required this.onTap,
-      required this.selecUsers})
-      : super(key: key);
+  const UserListBuilder({
+    Key? key,
+    required this.users,
+    required this.scrollController,
+    required this.onTap,
+    // required this.selecUsersIds
+  }) : super(key: key);
 
   @override
   State<UserListBuilder> createState() => _UserListBuilderState();
@@ -134,8 +134,8 @@ class _UserListBuilderState extends State<UserListBuilder> {
   @override
   Widget build(BuildContext context) {
     final users = widget.users();
-    final selecUsers = widget.selecUsers();
-    List<String> ids = selecUsers.map((e) => e.id).toList();
+    // final selecUsersIds = widget.selecUsersIds();
+    final selecUsersIds = provider.selecUsersIds;
     return ListView.separated(
       separatorBuilder: (c, i) => const Divider(),
       controller: widget.scrollController,
@@ -144,7 +144,7 @@ class _UserListBuilderState extends State<UserListBuilder> {
       itemBuilder: (BuildContext context, i) {
         return UserListTile(
           user: users[i],
-          isSelected: ids.contains(users[i].id),
+          isSelected: selecUsersIds.contains(users[i].id),
           onChanged: (v) {
             widget.onTap(users[i]);
             setState(() {});

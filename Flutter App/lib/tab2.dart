@@ -1,4 +1,5 @@
 import 'package:demoapp/main.dart';
+import 'package:demoapp/provider.dart';
 import 'package:demoapp/tabs1.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,27 +13,28 @@ class UserListTab2 extends StatefulWidget {
 }
 
 class _UserListTab2State extends State<UserListTab2> {
-  int offset = 0; 
+  int offset = 0;
   Future<List<UserModel>> getData() async {
-    final valls = widget.pref.getStringList('key');
-    users = valls?.map((e) => UserModel.fromJson(e)).toList() ?? [];
-    selecUsers = [...users];
+    users = provider.selectedUsers;
+    // selecUsersIds
+    //     .map((e) => UserModel.fromJson(widget.pref.getString(e)!))
+    //     .toList();
     return users;
   }
 
-  List<UserModel> selecUsers = [];
-
   Future onTap(UserModel user) async {
-    bool isAv = selecUsers.map((e) => e.id).contains(user.id);
-    if (isAv) {
-      selecUsers.removeWhere((e) => e.id == user.id);
-    } else {
-      selecUsers.add(user);
-    }
+    // bool isAv = selecUsersIds.contains(user.id);
     Utils(context).showLoading();
-    final List<String> vals = selecUsers.map((e) => e.toJson()).toList();
-    await widget.pref.setStringList('key', vals);
-    users = [...selecUsers];
+    await provider.onTap(user);
+    // if (isAv) {
+    //   // selecUsersIds.removeWhere((e) => e == user.id);
+    //   await widget.pref.remove(user.id);
+    // } else {
+    //   // selecUsersIds.add(user.id);
+    //   users.add(user);
+    //   await widget.pref.setString(user.id, user.toString());
+    // }
+    users.removeWhere((e) => e.id == user.id);
     Navigator.pop(context);
   }
 
@@ -53,7 +55,7 @@ class _UserListTab2State extends State<UserListTab2> {
                 Expanded(
                     child: UserListBuilder(
                   users: () => users,
-                  selecUsers: () => selecUsers,
+                  // selecUsersIds: () => selecUsersIds,
                   scrollController: _scrollController,
                   onTap: onTap,
                 )),
@@ -69,9 +71,7 @@ class _UserListTab2State extends State<UserListTab2> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           Utils(context).showLoading();
-          await widget.pref.setStringList('key', []);
-          // selecUsers = [];
-          // users = [...selecUsers];
+          await provider.deSelectAll();
           Navigator.pop(context);
           setState(() {});
         },

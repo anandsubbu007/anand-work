@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:demoapp/provider.dart';
 import 'package:demoapp/tab2.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,13 +42,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Future<SharedPreferences> getDbInst() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs;
+    await provider.init();
+    return provider.pref!;
   }
 
   List<UserModel> datas = [];
-  // await prefs.setInt('counter', 10);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
