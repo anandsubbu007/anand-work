@@ -2,7 +2,7 @@
 import 'package:demoapp/data/dataProvider/local_data.dart';
 import 'package:demoapp/data/model/model.dart';
 import 'package:demoapp/Bloc/model_state.dart';
-import 'package:demoapp/data/repo/user_repo.dart';
+import 'package:demoapp/data/dataProvider/remote_user_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserProfileCubit extends Cubit<UserProfileState> {
