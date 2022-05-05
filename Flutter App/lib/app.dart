@@ -1,24 +1,11 @@
-import 'package:demoapp/BlocMethod/model/model.dart';
-import 'package:demoapp/BlocMethod/dataProvider/model_cubit.dart';
-import 'package:demoapp/BlocMethod/dataProvider/model_state.dart';
-import 'package:demoapp/BlocMethod/widget/tab1.dart';
-import 'package:demoapp/BlocMethod/widget/tab2.dart';
+import 'package:demoapp/data/dataProvider/local_data.dart';
+import 'package:demoapp/data/model/model.dart';
+import 'package:demoapp/Bloc/model_cubit.dart';
+import 'package:demoapp/Bloc/model_state.dart';
+import 'package:demoapp/widget/tab1.dart';
+import 'package:demoapp/widget/tab2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => UserProfileCubit(),
-      child: MaterialApp(
-          title: 'Flutter Test',
-          theme: ThemeData(primarySwatch: Colors.blue),
-          home: const MyHomePage(title: 'Title')),
-    );
-  }
-}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -37,7 +24,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Future getData() async {
-    await context.read<UserProfileCubit>().init();
+    await LocalDatabase().init();
+    // await context.read<UserProfileCubit>().init();
   }
 
   @override

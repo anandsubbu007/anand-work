@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
-import 'package:demoapp/BlocMethod/model/model.dart';
+import 'dart:io';
+import 'package:demoapp/data/model/model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -19,8 +20,12 @@ class RestAPI implements GitHubUserProfile {
           report: 'Fetched Data From API',
           isSuccess: true,
           value: fetchedUsers);
-    } catch (e) {
-      return Output(report: 'Error: $e', isSuccess: false);
+    } on FormatException catch (e) {
+      return Output(report: 'FormatException: $e', isSuccess: false);
+    } on HttpException catch (e) {
+      return Output(report: 'HttpException: $e', isSuccess: false);
+    } on SocketException catch (e) {
+      return Output(report: 'SocketException: $e', isSuccess: false);
     }
   }
 }

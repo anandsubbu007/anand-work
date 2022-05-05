@@ -1,7 +1,9 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:demoapp/BlocMethod/model/model.dart';
-import 'package:demoapp/BlocMethod/dataProvider/model_cubit.dart';
-import 'package:demoapp/BlocMethod/dataProvider/model_state.dart';
+import 'package:demoapp/data/dataProvider/local_data.dart';
+// import 'package:demoapp/data/model/dataProvider/local_data.dart';
+import 'package:demoapp/data/model/model.dart';
+import 'package:demoapp/Bloc/model_cubit.dart';
+import 'package:demoapp/Bloc/model_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -12,7 +14,8 @@ void main() {
   late UserProfileCubit taskCubit;
   setUp(() async {
     taskCubit = UserProfileCubit();
-    await taskCubit.init();
+    await LocalDatabase().init();
+    // await taskCubit.init();
   });
   group('UserProfileCubit test', () {
     // blocTest<UserProfileCubit, UserProfileState>(
@@ -42,7 +45,7 @@ void main() {
     blocTest<UserProfileCubit, UserProfileState>(
       'emits [Deselect All Selected Profile] with correct urgent tasks',
       build: () => taskCubit,
-      act: (cubit) => cubit.deSelectAll(),
+      act: (cubit) => cubit.deleteAll(),
       expect: () => [UserProfileClearAll()],
     );
 
