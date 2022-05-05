@@ -29,7 +29,6 @@ class UserProfileCubit extends Cubit<UserProfileState> {
 
   Future onTap(UserProfile user) async {
     bool isAv = pref!.containsKey(user.id);
-    print('$isAv  | ${user.id}');
     if (isAv) {
       await pref!.remove(user.id);
       selectedUsers.removeWhere((e) => e.id == user.id);
@@ -43,29 +42,50 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   Future deSelectAll() async {
     await pref!.clear();
     selectedUsers = [];
-    // emit(state - state);
     emit(UserProfileClearAll());
   }
 
-  Future fetchUsers(int count, [bool? intalized]) async {
+  Future<Output<List<UserProfile>>> fetchUser(int count,
+      [bool? intalized]) async {
     if (!(intalized ?? true)) {
       if (fetchedUsers.isEmpty) {
-        await fetchUserDatas(count);
+        var output = await RestAPI().fetchUser(fetchedUsers.length, count);
+        fetchedUsers = output.value ?? [];
+        return output;
+      } else {
+        return Output(report: 'Data Load Not Required', isSuccess: true);
       }
     } else {
-      await fetchUserDatas(count);
+      var output = await RestAPI().fetchUser(fetchedUsers.length, count);
+      fetchedUsers = output.value ?? [];
+      return output;
+    }
+    // emit(UserProfilenewData([...fetchedUsers]));
+  }
+}
+
+class RestAPI implements GitHubUserProfile {
+  static const String baseUrl = 'https://api.github.com/';
+  @override
+  Future<Output<List<UserProfile>>> fetchUser(int offset, int length) async {
+    final off = offset + length;
+    String url = '${baseUrl}users?per_page=$off';
+    try {
+      final resp = await http.get(Uri.parse(url));
+      final map = json.decode(resp.body);
+      final userLst = (map as List).map((e) => UserProfile.fromMap(e));
+      final fetchedUsers = userLst.toList();
+      return Output(
+          report: 'Fetched Data From API',
+          isSuccess: true,
+          value: fetchedUsers);
+    } catch (e) {
+      return Output(report: 'Error: $e', isSuccess: false);
     }
   }
+}
 
-  Future fetchUserDatas(int count) async {
-    final offset = fetchedUsers.length + count;
-    String url = 'https://api.github.com/users?per_page=$offset';
-    final resp = await http.get(Uri.parse(url));
-    final map = json.decode(resp.body);
-    final userLst = (map as List).map((e) => UserProfile.fromMap(e));
-    fetchedUsers = userLst.toList();
-    // print(fetchedUsers.map((e) => e.toMap()));
-    // emit(state + 1);
-    emit(UserProfilenewData([...fetchedUsers]));
-  }
+abstract class GitHubUserProfile {
+  Future<Output<List<UserProfile>>> fetchUser(int offset, int length) async =>
+      Output(report: '', isSuccess: true, value: []);
 }

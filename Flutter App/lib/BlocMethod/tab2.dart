@@ -19,7 +19,7 @@ class UserProfileListTab2 extends StatelessWidget {
           await context.read<UserProfileCubit>().deSelectAll();
           Navigator.pop(context);
         },
-        label: const Text('Deselect All'),
+        label: const Text('Deselect All')
       ),
     );
   }

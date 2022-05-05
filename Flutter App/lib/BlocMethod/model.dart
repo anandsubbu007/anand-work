@@ -36,3 +36,15 @@ class UserProfile extends Equatable {
   factory UserProfile.fromJson(String source) =>
       UserProfile.fromMap(json.decode(source));
 }
+
+class Output<T> {
+  String report;
+  int? statusCode;
+  T? value;
+  bool isSuccess;
+  Output(
+      {required this.report,
+      this.statusCode,
+      this.value,
+      required this.isSuccess});
+}

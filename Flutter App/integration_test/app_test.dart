@@ -18,36 +18,34 @@ import 'package:collection/collection.dart';
 void main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('User Fetching', () {
-    TabOneTest tabOne;
-
+    AppTesting apptesting;
     testWidgets('App Intilization', (WidgetTester tester) async {
       app.main();
-      tabOne = TabOneTest(tester: tester);
-      await tabOne.checkForIntalized();
-      await tabOne.checkTabVisibility(0);
-      await tabOne.isDataLoaded();
-      await tabOne.paginationCheck();
-      await tabOne.unSelectIfExist();
-      print('\n');
-      final selectedKeys = await tabOne.checkButtonCheck();
+      apptesting = AppTesting(tester: tester);
+      await apptesting.checkForIntalized();
+      await apptesting.checkTabVisibility(0);
+      await apptesting.isDataLoaded();
+      await apptesting.paginationCheck();
+      await apptesting.unSelectIfExist();
+      final selectedKeys = await apptesting.checkButtonCheck();
       await Future.delayed(Duration(seconds: 2));
-      await tabOne.changeTab(1);
+      await apptesting.changeTab(1);
       await Future.delayed(Duration(seconds: 2));
-      await tabOne.checkKeyStoredLocaly(selectedKeys);
+      await apptesting.checkKeyStoredLocaly(selectedKeys);
       await Future.delayed(Duration(seconds: 2));
-      await tabOne.uncheckKeyStoredLocaly(selectedKeys.first, 2);
+      await apptesting.presCheckBoxToVerify(selectedKeys.first, 2);
       await Future.delayed(Duration(seconds: 2));
-      await tabOne.unCheckAll();
+      await apptesting.unCheckAll();
       await Future.delayed(Duration(seconds: 2));
-      await tabOne.changeTab(0);
+      await apptesting.changeTab(0);
       await Future.delayed(Duration(seconds: 5));
     });
   });
 }
 
-class TabOneTest {
+class AppTesting {
   WidgetTester tester;
-  TabOneTest({required this.tester});
+  AppTesting({required this.tester});
 
   Future checkForIntalized() async {
     await tester.pumpAndSettle();
@@ -152,7 +150,7 @@ class TabOneTest {
     await tester.pumpAndSettle();
   }
 
-  Future uncheckKeyStoredLocaly(Key key, int expectedLen) async {
+  Future presCheckBoxToVerify(Key key, int expectedLen) async {
     await tester.tap(find.byKey(key));
     await tester.pumpAndSettle();
     final widList = tester.widgetList<Checkbox>(find.byType(Checkbox));

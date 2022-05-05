@@ -15,18 +15,18 @@ void main() {
     await taskCubit.init();
   });
   group('UserProfileCubit test', () {
+    // blocTest<UserProfileCubit, UserProfileState>(
+    //   'emits [fetchUsers, UserProfilenewData] states for'
+    //   'successful task loads',
+    //   build: () => taskCubit,
+    //   act: (cubit) => cubit.fetchUser(1),
+    //   expect: () => [
+    //     // ({login: mojombo, id: 1, avatar_url: https://avatars.githubusercontent.com/u/1?v=4})
+    //     // UserProfilenewData(const [initialItem])
+    //   ],
+    // );
     blocTest<UserProfileCubit, UserProfileState>(
-      'emits [fetchUsers, UserProfilenewData] states for'
-      'successful task loads',
-      build: () => taskCubit,
-      act: (cubit) => cubit.fetchUsers(1),
-      expect: () => [
-        // ({login: mojombo, id: 1, avatar_url: https://avatars.githubusercontent.com/u/1?v=4})
-        UserProfilenewData(const [initialItem])
-      ],
-    );
-    blocTest<UserProfileCubit, UserProfileState>(
-      'emits [TaskLoadInProgress, TaskLoadSuccess] with correct urgent tasks',
+      'emits [UserProfile On Tap: SelectionChange] with correct urgent tasks',
       build: () => taskCubit,
       act: (cubit) => cubit.onTap(initialItem),
       expect: () => [
@@ -34,20 +34,18 @@ void main() {
       ],
     );
     blocTest<UserProfileCubit, UserProfileState>(
-      'emits [TaskLoadInProgress, TaskLoadSuccess] with correct urgent tasks',
+      'emits [UserProfile on Tap Selected Profile to Deselect] with correct urgent tasks',
       build: () => taskCubit,
       act: (cubit) => cubit.onTap(initialItem),
       expect: () => [UserProfileOnSelectionChange(const [])],
     );
     blocTest<UserProfileCubit, UserProfileState>(
-      'emits [TaskLoadInProgress, TaskLoadSuccess] with correct urgent tasks',
+      'emits [Deselect All Selected Profile] with correct urgent tasks',
       build: () => taskCubit,
-      act: (cubit) => cubit.getLocalData(),
-      expect: () => [],
+      act: (cubit) => cubit.deSelectAll(),
+      expect: () => [UserProfileClearAll()],
     );
 
-    tearDown(() {
-      taskCubit.close();
-    });
+    tearDown(() => taskCubit.close());
   });
 }

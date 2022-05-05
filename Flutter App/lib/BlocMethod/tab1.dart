@@ -2,6 +2,7 @@ import 'package:demoapp/BlocMethod/app.dart';
 import 'package:demoapp/BlocMethod/model.dart';
 import 'package:demoapp/BlocMethod/model_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserProfileListTab1 extends StatefulWidget {
@@ -29,7 +30,14 @@ class _UserProfileListTab1State extends State<UserProfileListTab1> {
   bool isLoad = false;
   Future getData() async {
     isLoad = true;
-    await context.read<UserProfileCubit>().fetchUsers(10, isinitiated);
+    final output =
+        await context.read<UserProfileCubit>().fetchUser(10, isinitiated);
+    if (!output.isSuccess) {
+      SchedulerBinding.instance?.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(output.report)));
+      });
+    }
     isinitiated = true;
     isLoad = false;
   }
