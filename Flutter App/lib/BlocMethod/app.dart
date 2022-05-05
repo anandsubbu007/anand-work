@@ -46,11 +46,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         appBar: AppBar(
           title: Text(widget.title),
           bottom: TabBar(controller: _tabController, tabs: const [
-            Tab(child: Text('Tab 1')),
-            Tab(child: Text('Tab 2')),
+            Tab(key: Key('Tab 0'), child: Text('Tab 1')),
+            Tab(key: Key('Tab 1'), child: Text('Tab 2')),
           ]),
         ),
         body: FutureBuilder(
+            key: const Key('Inialize'),
             future: getData(),
             builder: (context, snapshot) {
               bool isLoading = snapshot.connectionState != ConnectionState.done;
@@ -60,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   : BlocBuilder<UserProfileCubit, UserProfileState>(
                       builder: (_, __) {
                       return TabBarView(
+                          key: const Key('TAB'),
                           controller: _tabController,
                           children: const [
                             UserProfileListTab1(),

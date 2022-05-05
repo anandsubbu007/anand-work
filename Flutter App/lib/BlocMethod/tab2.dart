@@ -13,6 +13,7 @@ class UserProfileListTab2 extends StatelessWidget {
       body: UserListBuilder(
           scrollController: _scrollController, isSelectedUser: true),
       floatingActionButton: FloatingActionButton.extended(
+        key: const Key('FloatingActionButton'),
         onPressed: () async {
           Utils(context).showLoading();
           await context.read<UserProfileCubit>().deSelectAll();

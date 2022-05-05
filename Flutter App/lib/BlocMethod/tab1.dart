@@ -43,6 +43,7 @@ class _UserProfileListTab1State extends State<UserProfileListTab1> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
+      key: const Key('UserProfileListTab1'),
       future: getData(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         bool isLoading = snapshot.connectionState != ConnectionState.done;
@@ -73,13 +74,13 @@ class UserListBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late List<UserProfile> users;
-    users = isSelectedUser
-        ? context
-            .select<UserProfileCubit, List<UserProfile>>((e) => e.selectedUsers)
-        : context
-            .select<UserProfileCubit, List<UserProfile>>((e) => e.fetchedUsers);
-    final selecUsersIds =
-        context.select<UserProfileCubit, List<String>>((e) => e.selecUsersIds);
+    final dataProv = context.watch<UserProfileCubit>();
+    users = isSelectedUser ? dataProv.selectedUsers : dataProv.fetchedUsers;
+    // ? context
+    //     .select<UserProfileCubit, List<UserProfile>>((e) => e.selectedUsers)
+    // : context
+    //     .select<UserProfileCubit, List<UserProfile>>((e) => e.fetchedUsers);
+    final selecUsersIds = dataProv.selecUsersIds;
     return users.isEmpty
         ? const SizedBox.shrink()
         : ListView.separated(
@@ -87,6 +88,7 @@ class UserListBuilder extends StatelessWidget {
             separatorBuilder: (c, i) => const Divider(),
             controller: scrollController,
             shrinkWrap: true,
+            restorationId: '${users.length}',
             itemCount: users.length,
             itemBuilder: (BuildContext context, i) {
               return UserProfileListTile(

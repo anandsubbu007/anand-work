@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:demoapp/BlocMethod/model.dart';
@@ -27,6 +29,7 @@ class UserProfileCubit extends Cubit<UserProfileState> {
 
   Future onTap(UserProfile user) async {
     bool isAv = pref!.containsKey(user.id);
+    print('$isAv  | ${user.id}');
     if (isAv) {
       await pref!.remove(user.id);
       selectedUsers.removeWhere((e) => e.id == user.id);
@@ -34,8 +37,7 @@ class UserProfileCubit extends Cubit<UserProfileState> {
       await pref!.setString(user.id, user.toJson());
       selectedUsers.add(user);
     }
-    // emit(state + 1);
-    emit(UserProfileOnSelectionChange(selectedUsers));
+    emit(UserProfileOnSelectionChange([...selectedUsers]));
   }
 
   Future deSelectAll() async {
@@ -64,6 +66,6 @@ class UserProfileCubit extends Cubit<UserProfileState> {
     fetchedUsers = userLst.toList();
     // print(fetchedUsers.map((e) => e.toMap()));
     // emit(state + 1);
-    emit(UserProfilenewData(fetchedUsers));
+    emit(UserProfilenewData([...fetchedUsers]));
   }
 }
