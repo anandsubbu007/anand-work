@@ -26,6 +26,8 @@ class RestAPI implements GitHubUserProfile {
       return Output(report: 'HttpException: $e', isSuccess: false);
     } on SocketException catch (e) {
       return Output(report: 'SocketException: $e', isSuccess: false);
+    } catch (e) {
+      return Output(report: 'Error: $e', isSuccess: false);
     }
   }
 }

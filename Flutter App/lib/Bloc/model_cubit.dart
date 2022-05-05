@@ -30,17 +30,24 @@ class UserProfileCubit extends Cubit<UserProfileState> {
       [bool? intalized]) async {
     if (!(intalized ?? true)) {
       if (fetchedUsers.isEmpty) {
-        var output = await RestAPI().fetchUser(fetchedUsers.length, count);
-        fetchedUsers = output.value ?? [];
+        var output = await fetchUserData(count);
         return output;
       } else {
         return Output(report: 'Data Load Not Required', isSuccess: true);
       }
     } else {
-      var output = await RestAPI().fetchUser(fetchedUsers.length, count);
-      fetchedUsers = output.value ?? [];
+      var output = await fetchUserData(count);
       return output;
     }
-    // emit(UserProfilenewData([...fetchedUsers]));
+  }
+
+  Future<Output<List<UserProfile>>> fetchUserData(int count) async {
+    var output = await RestAPI().fetchUser(fetchedUsers.length, count);
+    if (output.isSuccess) {
+      fetchedUsers = output.value ?? [];
+    } else {
+      output.value = fetchedUsers;
+    }
+    return output;
   }
 }
