@@ -1,8 +1,8 @@
-import 'package:demoapp/BlocMethod/model.dart';
-import 'package:demoapp/BlocMethod/model_cubit.dart';
-import 'package:demoapp/BlocMethod/model_state.dart';
-import 'package:demoapp/BlocMethod/tab1.dart';
-import 'package:demoapp/BlocMethod/tab2.dart';
+import 'package:demoapp/BlocMethod/model/model.dart';
+import 'package:demoapp/BlocMethod/dataProvider/model_cubit.dart';
+import 'package:demoapp/BlocMethod/dataProvider/model_state.dart';
+import 'package:demoapp/BlocMethod/widget/tab1.dart';
+import 'package:demoapp/BlocMethod/widget/tab2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

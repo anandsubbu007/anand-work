@@ -1,6 +1,6 @@
 import 'package:demoapp/BlocMethod/app.dart';
-import 'package:demoapp/BlocMethod/model.dart';
-import 'package:demoapp/BlocMethod/model_cubit.dart';
+import 'package:demoapp/BlocMethod/model/model.dart';
+import 'package:demoapp/BlocMethod/dataProvider/model_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,4 +1,4 @@
-import 'package:demoapp/BlocMethod/model.dart';
+import 'package:demoapp/BlocMethod/model/model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 

@@ -1,7 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:demoapp/BlocMethod/model.dart';
-import 'package:demoapp/BlocMethod/model_cubit.dart';
-import 'package:demoapp/BlocMethod/model_state.dart';
+import 'package:demoapp/BlocMethod/model/model.dart';
+import 'package:demoapp/BlocMethod/dataProvider/model_cubit.dart';
+import 'package:demoapp/BlocMethod/dataProvider/model_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
