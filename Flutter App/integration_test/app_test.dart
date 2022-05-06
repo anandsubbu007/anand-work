@@ -1,17 +1,8 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// ignore_for_file: avoid_print
 
-// ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_brace_in_string_interps
-
-// import 'package:demoapp/BlocMethod/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demoapp/main.dart' as app;
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:integration_test/integration_test.dart';
 import 'package:collection/collection.dart';
 
@@ -28,17 +19,17 @@ void main() async {
       await apptesting.paginationCheck();
       await apptesting.unSelectIfExist();
       final selectedKeys = await apptesting.checkButtonCheck();
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       await apptesting.changeTab(1);
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       await apptesting.checkKeyStoredLocaly(selectedKeys);
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       await apptesting.presCheckBoxToVerify(selectedKeys.first, 2);
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       await apptesting.unCheckAll();
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       await apptesting.changeTab(0);
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 5));
     });
   });
 }
@@ -50,35 +41,35 @@ class AppTesting {
   Future checkForIntalized() async {
     await tester.pumpAndSettle();
     expect(find.textContaining('Tab').evaluate().length, 2);
-    var byType = find.byKey(Key('Inialize'));
+    var byType = find.byKey(const Key('Inialize'));
     final futWid = tester.widget<FutureBuilder>(byType);
     await futWid.future;
     print('Intalization Completed');
   }
 
   Future checkTabVisibility(int idx) async {
-    final tabKey = find.byKey(Key('TAB'));
+    final tabKey = find.byKey(const Key('TAB'));
     final tabWid = tester.widget<TabBarView>(tabKey);
     expect(tabWid.controller?.index, idx);
   }
 
   Future isDataLoaded() async {
     await tester.pumpAndSettle();
-    final userList = find.byKey(Key('ListViewKey'));
+    final userList = find.byKey(const Key('ListViewKey'));
     final wigeg = tester.widget<ListView>(userList);
     expect((wigeg.childrenDelegate.estimatedChildCount ?? 0) > 0, true);
   }
 
   int getlistOfUser() {
     // return tester.widgetList<UserProfileListTile>(find.byType(UserProfileListTile)).length;
-    final userList = find.byKey(Key('ListViewKey'));
+    final userList = find.byKey(const Key('ListViewKey'));
     final wigeg = tester.widget<ListView>(userList);
     // Don't Know how to get itemcount in list view
     return int.tryParse(wigeg.restorationId ?? '') ?? 0;
   }
 
   Future paginationCheck() async {
-    final userListView = find.byKey(Key('ListViewKey'));
+    final userListView = find.byKey(const Key('ListViewKey'));
     int val1 = getlistOfUser();
     expect(val1 > 0, true);
     await tester.fling(userListView, const Offset(0, -1000), 1000);
@@ -91,7 +82,7 @@ class AppTesting {
     expect(val3 > val2, true);
     await tester.fling(userListView, const Offset(0, 5000), 1000);
     await tester.pumpAndSettle();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
   }
 
   Future<List<Key>> checkButtonCheck() async {
@@ -99,7 +90,7 @@ class AppTesting {
     final visibleKeys = widList.map((e) => e.key!).toList();
     final selectKey = visibleKeys.slice(0, 3);
     await Future.forEach(selectKey, (Key e) async {
-      await Future.delayed(Duration(milliseconds: 100), () async {
+      await Future.delayed(const Duration(milliseconds: 100), () async {
         print('$e Tapped To Save');
         await tester.tap(find.byKey(e));
         await tester.pumpAndSettle();
@@ -162,7 +153,7 @@ class AppTesting {
 
   Future unCheckAll() async {
     await checkTabVisibility(1);
-    await tester.tap(find.byKey(Key('FloatingActionButton')));
+    await tester.tap(find.byKey(const Key('FloatingActionButton')));
     await tester.pumpAndSettle();
     final widList = tester.widgetList<Checkbox>(find.byType(Checkbox));
     final preSelectedKeys =

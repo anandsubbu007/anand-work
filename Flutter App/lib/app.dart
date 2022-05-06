@@ -1,4 +1,4 @@
-import 'package:demoapp/data/dataProvider/local_data.dart';
+import 'package:demoapp/Bloc/remote_data_cubit.dart';
 import 'package:demoapp/data/model/model.dart';
 import 'package:demoapp/Bloc/model_cubit.dart';
 import 'package:demoapp/Bloc/model_state.dart';
@@ -6,6 +6,7 @@ import 'package:demoapp/widget/tab1.dart';
 import 'package:demoapp/widget/tab2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'injection.dart' as di;
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -24,8 +25,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Future getData() async {
-    await LocalDatabase().init();
-    // await context.read<UserProfileCubit>().init();
+    // 
   }
 
   @override
@@ -46,14 +46,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               return isLoading
                   ? const Scaffold(
                       body: Center(child: CircularProgressIndicator()))
-                  : BlocBuilder<UserProfileCubit, UserProfileState>(
+                  : BlocBuilder<UserDataRepoCubit, UserProfileState>(
                       builder: (_, __) {
                       return TabBarView(
                           key: const Key('TAB'),
                           controller: _tabController,
-                          children: const [
-                            UserProfileListTab1(),
-                            UserProfileListTab2(),
+                          children: [
+                            BlocProvider(
+                                create: (_) => di.sl<RemoteUserDataRepoCubit>(),
+                                child: const UserProfileListTab1()),
+                            const UserProfileListTab2(),
                           ]);
                     });
             }));
@@ -62,23 +64,31 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
 class UserProfileListTile extends StatelessWidget {
   final UserProfile user;
-  final bool? isSelected;
   final Function(bool?)? onChanged;
-  const UserProfileListTile(
-      {Key? key, required this.user, this.isSelected, this.onChanged})
+  const UserProfileListTile({Key? key, required this.user, this.onChanged})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Future<bool> getData() async {
+      bool isSelected = await context
+          .select((UserDataRepoCubit e) => e.isSelecUsersId(user.id));
+      return isSelected;
+    }
+
     return ListTile(
       leading: CircleAvatar(backgroundImage: NetworkImage(user.imgURL)),
       title: Text(user.name),
       trailing: onChanged == null
-          ? null
-          : Checkbox(
-              key: Key('Checkbox${user.id}'),
-              value: isSelected,
-              onChanged: onChanged),
+          ? const SizedBox()
+          : FutureBuilder<bool>(
+              future: getData(),
+              builder: (context, snapshot) {
+                return Checkbox(
+                    key: Key('Checkbox${user.id}'),
+                    value: snapshot.data ?? false,
+                    onChanged: onChanged);
+              }),
     );
   }
 }

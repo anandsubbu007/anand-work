@@ -2,52 +2,42 @@
 import 'package:demoapp/data/dataProvider/local_data.dart';
 import 'package:demoapp/data/model/model.dart';
 import 'package:demoapp/Bloc/model_state.dart';
-import 'package:demoapp/data/dataProvider/remote_user_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class UserProfileCubit extends Cubit<UserProfileState> {
-  UserProfileCubit() : super(UserProfileLoadInitial()) {
-    selectedUsers = LocalDatabase().selectedUsers;
+class UserDataRepoCubit extends Cubit<UserProfileState> {
+  final LocalDataSource localDataSource;
+
+  Future<List<UserProfile>> get selectedUsers async {
+    final output = await localDataSource.getLocalData();
+    final data = output.fold<Output<List<UserProfile>>>(
+      (e) => Output(isSuccess: false, report: '${e.props}', value: []),
+      (e) => Output(isSuccess: true, report: 'Gotcha', value: e),
+    );
+    return data.value;
   }
 
-  List<UserProfile> selectedUsers = [];
-  List<UserProfile> fetchedUsers = [];
-  LocalDatabase localDb = LocalDatabase();
+  UserDataRepoCubit({required this.localDataSource})
+      : super(UserProfileLoadInitial()) {
+    localDataSource.getLocalData();
+  }
+  Future<bool> isSelecUsersId(String id) async =>
+      (await selectedUsers).map((e) => e.id).contains(id);
 
-  List<String> get selecUsersIds => selectedUsers.map((e) => e.id).toList();
-
-  Future onTap(UserProfile user) async {
-    selectedUsers = await localDb.onTap(user);
-    emit(UserProfileOnSelectionChange([...selectedUsers]));
+  Future<Output<List<UserProfile>>> onTap(UserProfile user) async {
+    final output = await localDataSource.onUserTap(user);
+    final data = output.fold<Output<List<UserProfile>>>(
+      (e) => Output(isSuccess: false, report: '${e.props}', value: []),
+      (e) => Output(isSuccess: true, report: 'Gotcha', value: e),
+    );
+    emit(UserProfileOnSelectionChange(data.value));
+    return data;
   }
 
-  Future deleteAll() async {
-    selectedUsers = await localDb.deleteAll();
+  Future<bool> deleteAll() async {
+    final output = await localDataSource.deleteAll();
+    final res = output.fold<bool>((e) => false, (e) => e);
     emit(UserProfileClearAll());
+    return res;
   }
 
-  Future<Output<List<UserProfile>>> fetchUser(int count,
-      [bool? intalized]) async {
-    if (!(intalized ?? true)) {
-      if (fetchedUsers.isEmpty) {
-        var output = await fetchUserData(count);
-        return output;
-      } else {
-        return Output(report: 'Data Load Not Required', isSuccess: true);
-      }
-    } else {
-      var output = await fetchUserData(count);
-      return output;
-    }
-  }
-
-  Future<Output<List<UserProfile>>> fetchUserData(int count) async {
-    var output = await RestAPI().fetchUser(fetchedUsers.length, count);
-    if (output.isSuccess) {
-      fetchedUsers = output.value ?? [];
-    } else {
-      output.value = fetchedUsers;
-    }
-    return output;
-  }
 }

@@ -40,11 +40,11 @@ class UserProfile extends Equatable {
 class Output<T> {
   String report;
   int? statusCode;
-  T? value;
+  T value;
   bool isSuccess;
   Output(
       {required this.report,
       this.statusCode,
-      this.value,
+      required this.value,
       required this.isSuccess});
 }

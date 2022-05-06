@@ -16,7 +16,7 @@ class UserProfileListTab2 extends StatelessWidget {
           key: const Key('FloatingActionButton'),
           onPressed: () async {
             Utils(context).showLoading();
-            await context.read<UserProfileCubit>().deleteAll();
+            await context.read<UserDataRepoCubit>().deleteAll();
             Navigator.pop(context);
           },
           label: const Text('Deselect All')),
