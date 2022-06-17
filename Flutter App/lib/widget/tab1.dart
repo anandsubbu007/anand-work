@@ -33,7 +33,7 @@ class _UserProfileListTab1State extends State<UserProfileListTab1> {
     final output =
         await context.read<UserProfileCubit>().fetchUser(10, isinitiated);
     if (!output.isSuccess) {
-      SchedulerBinding.instance?.addPostFrameCallback((_) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(output.report)));
       });
